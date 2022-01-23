@@ -3,7 +3,9 @@ const joi = require('joi'); //package validation data
 const bcrypt = require('bcrypt') //package encryption data
 const jwt = require('jsonwebtoken') //package token
 
+// ==================
 // register user
+// ==================
 exports.register = async (req, res) => {
   const data = req.body;
   const schema = joi.object({
@@ -74,7 +76,9 @@ exports.register = async (req, res) => {
   }
 };
 
+// ==================
 // user login
+// ==================
 exports.login = async (req, res) => {
   const data = req.body;
   const schema = joi.object({
@@ -147,3 +151,101 @@ exports.login = async (req, res) => {
     });
   }
 };
+
+// ==================
+// show all user
+// ==================
+exports.showUsers = async (req, res) => {
+  try {
+    const data = await tb_users.findAll({
+      attributes: {
+        exclude: ['password', 'createdAt', 'updatedAt']
+      }
+    })
+
+    if (data == '') {
+      return res.send({
+        message: 'no data found'
+      })
+    }
+
+    res.send({
+      status: 'success',
+      data: {
+        users: {
+          data,
+        }
+      }
+    })
+  } catch (err) {
+    res.send({
+      status: 'failed',
+      message: 'server error'
+    })
+  }
+}
+// ==================
+// edit user
+// ==================
+exports.editUser = async (req, res) => {
+  try {
+    const id = req.params.id
+    const newData = req.body
+
+    await tb_users.update(newData, {
+      where: {
+        id
+      }
+    })
+
+    const data = await tb_users.findOne({
+      where: {
+        id
+      },
+      attributes: {
+        exclude: ['password', 'createdAt', 'updatedAt']
+      }
+    })
+
+    res.send({
+      status: 'success',
+      data: {
+        user: {
+          data
+        }
+      }
+    })
+  } catch (err) {
+    res.send({
+      status: 'failed',
+      message: 'server error'
+    })
+  }
+}
+
+// ==================
+// Delete User
+// ==================
+exports.deleteUser = async (req, res,) => {
+  try {
+    const { id } = req.params
+
+    await tb_users.destroy({
+      where: {
+        id
+      }
+    })
+
+    res.send({
+      status: 'success',
+      data: {
+        id
+      }
+    })
+  } catch (error) {
+    res.send({
+      status: 'failred',
+      message: 'server error'
+    })
+  }
+}
