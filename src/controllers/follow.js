@@ -1,4 +1,4 @@
-const { tb_users, tb_following, tb_follower } = require("../../models"); //table db
+const { tb_users, tb_follows } = require("../../models"); //table db
 const jwt = require('jsonwebtoken') //package token
 // ==================
 // following
@@ -6,20 +6,20 @@ const jwt = require('jsonwebtoken') //package token
 exports.following = async (req, res) => {
     try {
         const { id } = req.params
-        let user = await tb_following.findAll({
+        let user = await tb_follows.findAll({
             where: {
                 idUser: id,
             },
             include: {
                 model: tb_users,
-                as: 'user',
+                as: 'userFollowing',
                 attributes: {
                     exclude: ['createdAt', 'updatedAt', 'password', 'bio', 'email']
                 }
 
             },
             attributes: {
-                exclude: ['createdAt', 'updatedAt', 'id', 'idFollowing']
+                exclude: ['createdAt', 'updatedAt', 'idUser', 'idFollowing']
             }
         })
 
@@ -27,8 +27,6 @@ exports.following = async (req, res) => {
             status: 'success',
             data: {
                 following: user
-                // user: user[0]
-
             }
         })
     } catch (error) {
@@ -44,20 +42,20 @@ exports.following = async (req, res) => {
 exports.follower = async (req, res) => {
     try {
         const { id } = req.params
-        let user = await tb_follower.findAll({
+        let user = await tb_follows.findAll({
             where: {
-                idUser: id,
+                idFollowing: id,
             },
             include: {
                 model: tb_users,
-                as: 'user',
+                as: 'userFollower',
                 attributes: {
                     exclude: ['createdAt', 'updatedAt', 'password', 'bio', 'email']
                 }
 
             },
             attributes: {
-                exclude: ['createdAt', 'updatedAt', 'id', 'idFollower']
+                exclude: ['createdAt', 'updatedAt', 'idUser', 'idFollowing']
             }
         })
 
@@ -65,8 +63,6 @@ exports.follower = async (req, res) => {
             status: 'success',
             data: {
                 follower: user
-                // user: user[0]
-
             }
         })
     } catch (error) {
