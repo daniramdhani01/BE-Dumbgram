@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class tb_feeds extends Model {
+  class tb_likes extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,30 +11,28 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      tb_feeds.belongsTo(models.tb_users, {
+      tb_likes.belongsTo(models.tb_users, {
         as: 'user',
         foreignKey: {
           name: 'idUser'
         }
       })
 
-      // tb_feeds.belongsTo(models.tb_follows, {
-      //   as: 'follows',
-      //   foreignKey: {
-      //     name: 'idUser'
-      //   }
-      // })
+      tb_likes.belongsTo(models.tb_feeds, {
+        as: 'feed',
+        foreignKey: {
+          name: 'idFeed'
+        }
+      })
 
     }
   }
-  tb_feeds.init({
-    filename: DataTypes.STRING,
-    like: DataTypes.INTEGER,
-    caption: DataTypes.TEXT,
+  tb_likes.init({
     idUser: DataTypes.INTEGER,
+    idFeed: DataTypes.INTEGER
   }, {
     sequelize,
-    modelName: 'tb_feeds',
+    modelName: 'tb_likes',
   });
-  return tb_feeds;
+  return tb_likes;
 };

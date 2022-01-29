@@ -2,28 +2,40 @@ const express = require('express');
 
 const router = express.Router();
 
+const { auth } = require('../middleware/auth')
+const { uploadFile } = require('../middleware/uploadFile')
 const {
   register,
   login,
   showUsers,
   editUser,
   deleteUser,
+  following,
+  follower,
 } = require('../controllers/user');
 
 const {
-  following,
-  follower
-} = require('../controllers/follow')
-
-const { auth } = require('../middleware/auth')
-
+  addImage,
+  feedFollowing,
+  Feeds,
+  addLike,
+  comments
+} = require('../controllers/feeds')
 
 router.post('/register', register);
 router.post('/login', login);
+
 router.get('/users', showUsers);
 router.patch('/user/:id', auth, editUser);
 router.delete('/user/:id', deleteUser);
-router.get('/following/:id', following);
-router.get('/follower/:id', follower);
+
+router.get('/following/:id', following); //show following 
+router.get('/follower/:id', follower); // show follower
+
+router.post('/feed', auth, uploadFile('image'), addImage);
+router.get('/feed/:id', auth, feedFollowing)
+router.get('/feeds', Feeds)
+router.post('/like', auth, addLike)
+router.get('/comments/:id', auth, comments)
 
 module.exports = router;

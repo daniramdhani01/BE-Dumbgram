@@ -11,17 +11,18 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      tb_comments.belongsTo(models.tb_feeds, {
-        as: 'tb_feeds',
+      tb_comments.belongsTo(models.tb_users, {
+        as: 'user',
         foreignKey: {
-          name: 'idFeed'
+          name: 'idUser'
         }
       })
     }
   }
   tb_comments.init({
-    comment: DataTypes.TEXT,
-    idFeeds: DataTypes.INTEGER
+    idUser: DataTypes.INTEGER,
+    idFeed: DataTypes.INTEGER,
+    comment: DataTypes.TEXT
   }, {
     sequelize,
     modelName: 'tb_comments',

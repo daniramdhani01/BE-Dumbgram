@@ -24,6 +24,14 @@ module.exports = (sequelize, DataTypes) => {
           name: 'idUser'
         }
       })
+
+      tb_follows.hasMany(models.tb_feeds, {
+        as: 'feeds',
+        foreignKey: {
+          name: 'idUser'
+        }
+      })
+
     }
   }
   tb_follows.init({

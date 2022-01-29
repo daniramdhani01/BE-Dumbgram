@@ -11,7 +11,7 @@ exports.auth = (req, res, next) => {
             });
         }
 
-        const SECRET_KEY = 'BismillahTahunIniNikah'
+        const SECRET_KEY = process.env.TOKEN_KEY
 
         const verified = jwt.verify(token, SECRET_KEY) //data user in token
 

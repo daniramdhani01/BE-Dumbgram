@@ -11,12 +11,12 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      // tb_users.hasMany(models.tb_follows, {
-      //   as: 'tb_follows',
-      //   foreignKey: {
-      //     name: 'idFollower'
-      //   }
-      // })
+      tb_users.hasMany(models.tb_feeds, {
+        as: 'feeds',
+        foreignKey: {
+          name: 'idUser'
+        }
+      })
     }
   }
   tb_users.init({

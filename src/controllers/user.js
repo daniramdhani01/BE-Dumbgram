@@ -1,4 +1,4 @@
-const { tb_users } = require("../../models"); //table db
+const { tb_users, tb_follows } = require("../../models"); //table db
 const joi = require('joi'); //package validation data
 const bcrypt = require('bcrypt') //package encryption data
 const jwt = require('jsonwebtoken') //package token
@@ -54,7 +54,7 @@ exports.register = async (req, res) => {
       username: newUser.username,
 
     }
-    const SECRET_KEY = 'BismillahTahunIniNikah'
+    const SECRET_KEY = process.env.TOKEN_KEY
     const token = jwt.sign(dataToken, SECRET_KEY)
 
     res.status(200).send({
@@ -69,7 +69,7 @@ exports.register = async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    res.send({
+    res.status(500).send({
       status: "failed",
       message: "server error",
     });
@@ -129,7 +129,7 @@ exports.login = async (req, res) => {
       username: userExist.username,
 
     }
-    const SECRET_KEY = 'BismillahTahunIniNikah'
+    const SECRET_KEY = process.env.TOKEN_KEY
     const token = jwt.sign(dataToken, SECRET_KEY)
 
     res.status(200).send({
@@ -145,7 +145,7 @@ exports.login = async (req, res) => {
     })
   } catch (err) {
     console.log(err);
-    res.send({
+    res.status(500).send({
       status: "failed",
       message: "server error",
     });
@@ -178,7 +178,7 @@ exports.showUsers = async (req, res) => {
       }
     })
   } catch (err) {
-    res.send({
+    res.status(500).send({
       status: 'failed',
       message: 'server error'
     })
@@ -216,7 +216,7 @@ exports.editUser = async (req, res) => {
       }
     })
   } catch (err) {
-    res.send({
+    res.status(500).send({
       status: 'failed',
       message: 'server error'
     })
@@ -243,8 +243,82 @@ exports.deleteUser = async (req, res,) => {
       }
     })
   } catch (error) {
-    res.send({
+    res.status(500).send({
       status: 'failred',
+      message: 'server error'
+    })
+  }
+}
+
+// ==================
+// following
+// ==================
+exports.following = async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const user = await tb_follows.findAll({
+      where: {
+        idUser: id,
+      },
+      include: {
+        model: tb_users,
+        as: 'userFollowing',
+        attributes: {
+          exclude: ['createdAt', 'updatedAt', 'password', 'bio', 'email']
+        }
+
+      },
+      attributes: {
+        exclude: ['createdAt', 'updatedAt', 'idUser', 'idFollowing']
+      }
+    })
+
+    res.send({
+      status: 'success',
+      data: {
+        following: user
+      }
+    })
+  } catch (error) {
+    res.status(500).send({
+      status: 'failed',
+      message: 'server error'
+    })
+  }
+}
+
+// ==================
+// follower
+// ==================
+exports.follower = async (req, res) => {
+  try {
+    const { id } = req.params
+    let user = await tb_follows.findAll({
+      where: {
+        idFollowing: id,
+      },
+      include: {
+        model: tb_users,
+        as: 'userFollower',
+        attributes: {
+          exclude: ['createdAt', 'updatedAt', 'password', 'bio', 'email']
+        }
+
+      },
+      attributes: {
+        exclude: ['createdAt', 'updatedAt', 'idUser', 'idFollowing']
+      }
+    })
+
+    res.send({
+      status: 'success',
+      data: {
+        follower: user
+      }
+    })
+  } catch (error) {
+    res.status(500).send({
+      status: 'failed',
       message: 'server error'
     })
   }

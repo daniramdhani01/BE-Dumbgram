@@ -8,27 +8,36 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      comment: {
-        type: Sequelize.TEXT
-      },
-      idFeeds: {
+      idUser: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'tb_feeds',
-          key: 'id'
+          model: "tb_users",
+          key: "id"
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
+      },
+      idFeed: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: "tb_feeds",
+          key: "id"
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
+      },
+      comment: {
+        type: Sequelize.TEXT
       },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        dafaultValue: Sequelize.fn('now')
+        defaultValue: Sequelize.fn('now')
       },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        dafaultValue: Sequelize.fn('now')
+        defaultValue: Sequelize.fn('now')
       }
     });
   },
