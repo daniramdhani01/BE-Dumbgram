@@ -8,10 +8,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      message: {
-        type: Sequelize.TEXT
-      },
-      idUser: {
+      idSender: {
         type: Sequelize.INTEGER,
         references: {
           model: "tb_users",
@@ -20,15 +17,27 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "CASCADE"
       },
+      idReceiver: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: "tb_users",
+          key: "id"
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
+      },
+      message: {
+        type: Sequelize.TEXT
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.fn('now'),
+        defaultValue: Sequelize.fn('now')
       },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.fn('now'),
+        defaultValue: Sequelize.fn('now')
       }
     });
   },

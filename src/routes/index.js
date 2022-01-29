@@ -22,6 +22,11 @@ const {
   comments
 } = require('../controllers/feeds')
 
+const {
+  addMessage,
+  messages
+} = require('../controllers/messages')
+
 router.post('/register', register);
 router.post('/login', login);
 
@@ -37,5 +42,8 @@ router.get('/feed/:id', auth, feedFollowing)
 router.get('/feeds', Feeds)
 router.post('/like', auth, addLike)
 router.get('/comments/:id', auth, comments)
+
+router.post('/message/:id_user_send_to', auth, addMessage)
+router.get('/message-user/:id_user_send_to', auth, messages)
 
 module.exports = router;
