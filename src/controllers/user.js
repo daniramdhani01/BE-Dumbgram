@@ -323,3 +323,86 @@ exports.follower = async (req, res) => {
     })
   }
 }
+
+exports.addFollow = async (req, res) => {
+  try {
+    const idFollowing = req.params.id
+    const idUser = req.user.id
+
+    if (idFollowing == idUser) {
+      return res.status(400).send({
+        status: 'failed',
+        message: 'Bad request'
+      })
+    }
+
+    const exist = await tb_follows.findAll({
+      where: {
+        idUser,
+        idFollowing
+      }
+    })
+
+    if (exist) {
+      return res.status(400).send({
+        status: 'failed',
+        message: 'account has been follow'
+      })
+    }
+
+    const follow = await tb_follows.create({
+      idFollowing,
+      idUser
+    })
+
+    res.send({
+      status: 'sucess',
+      following: follow.idFollowing
+    })
+
+  } catch (err) {
+    res.status(500).send({
+      status: 'failed',
+      message: 'server error'
+    })
+  }
+}
+
+exports.unfollow = async (req, res) => {
+  try {
+    const idFollowing = req.params.id
+    const idUser = req.user.id
+
+    const exist = await tb_follows.findOne({
+      where: {
+        idUser,
+        idFollowing
+      }
+    })
+
+    if (!exist) {
+      return res.status(400).send({
+        status: 'failed',
+        message: 'bad request'
+      })
+    }
+
+    await tb_follows.destroy({
+      where: {
+        id: exist.id
+      }
+    })
+
+    res.send({
+      status: 'success',
+      data: {
+        unfollow: exist.idFollowing
+      }
+    })
+  } catch (err) {
+    res.status(500).send({
+      status: 'failed',
+      message: 'server error'
+    })
+  }
+}

@@ -1,8 +1,23 @@
 const { tb_feeds, tb_users, tb_follows, tb_likes, tb_comments } = require("../../models"); //table db
+const joi = require('joi'); //package validation data
 
 exports.addImage = async (req, res) => {
     try {
         const data = req.body;
+
+        const schema = joi.object({
+            caption: joi.string(),
+        });
+
+        //do validation and get error
+        const { error } = schema.validate(data);
+
+        //if error exixst send validation error message}
+        if (error) {
+            return res.status(400).send({
+                error: error.details[0].message
+            })
+        }
 
         const newFeed = await tb_feeds.create({
             ...data,
@@ -48,34 +63,49 @@ exports.addImage = async (req, res) => {
 
 exports.feedFollowing = async (req, res) => {
     try {
-        const { id } = req.params
-        const user = await tb_follows.findAll({
+        const { id } = req.user
+        const data = await tb_follows.findAll({
             where: {
                 idUser: id,
             },
             include: {
-                model: tb_feeds,
-                as: 'feeds',
+                model: tb_users,
+                as: 'userFollowing',
                 attributes: {
-                    exclude: ['createdAt', 'updatedAt',]
+                    exclude: ['createdAt', 'updatedAt', 'password', 'bio', 'email']
                 },
-                // include: {
-                //     model: tb_users,
-                //     as: 'userFollowing',
-                //     attributes: {
-                //         exclude: ['createdAt', 'updatedAt', 'password', 'bio', 'email']
-                //     },
-                // },
+                include: {
+                    model: tb_feeds,
+                    as: 'feeds',
+                    attributes: {
+                        exclude: ['createdAt', 'updatedAt', 'idUser']
+                    },
+                    include: {
+                        model: tb_users,
+                        as: 'user',
+                        attributes: {
+                            exclude: ['createdAt', 'updatedAt', 'password', 'bio', 'email']
+                        },
+                    },
+                },
             },
             attributes: {
-                exclude: ['createdAt', 'updatedAt', 'id']
+                exclude: ['createdAt', 'updatedAt', 'id', 'idUser', 'idFollowing']
             }
         })
 
+        const newData = data.map((currentValue) => { return currentValue.userFollowing.feeds })
+
+        let feed = []
+        for (i = 0; i < newData.length; i++) {
+            for (ix = 0; ix < newData[i].length; ix++) {
+                feed.push(newData[i][ix])
+            }
+        }
         res.send({
             status: 'success',
             data: {
-                following: user
+                feed
             }
         })
     } catch (error) {
